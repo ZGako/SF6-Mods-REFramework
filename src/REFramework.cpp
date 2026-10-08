@@ -1959,6 +1959,10 @@ void REFramework::draw_ui() {
     ImGui::Text("(?)");
     if (ImGui::IsItemHovered())
         ImGui::SetTooltip("Allows mouse and keyboard inputs to register to the game while the UI is focused.");
+    auto& disable_online_scripts = REFrameworkConfig::get()->get_disable_online_scripts()->value();
+    if (ImGui::Checkbox("Disable Scripts during Online Play", &disable_online_scripts)) {
+        request_save_config();
+    }
 
     // Mods:
     draw_about();

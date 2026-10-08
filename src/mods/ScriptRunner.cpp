@@ -18,6 +18,7 @@
 #include <utility/ScopeGuard.hpp>
 
 #include "Mods.hpp"
+#include "REFrameworkConfig.hpp"
 
 #include "bindings/Sdk.hpp"
 #include "bindings/ImGui.hpp"
@@ -1134,7 +1135,7 @@ void ScriptRunner::on_frame() {
         m_last_battle_type = std::nullopt;
     }
 
-    m_last_online_match_state = sdk::sf6::is_online_match();
+    m_last_online_match_state = REFrameworkConfig::get()->get_disable_online_scripts()->value() && sdk::sf6::is_online_match();
 
     if (m_needs_first_reset) {
         spdlog::info("[ScriptRunner] Initializing Lua state for the first time...");
