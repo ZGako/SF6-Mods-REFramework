@@ -29,6 +29,10 @@ public:
         return m_menu_open;
     }
 
+    auto& get_disable_online_scripts() {
+        return m_disable_online_scripts;
+    }
+
     bool is_always_show_cursor() const {
         return m_always_show_cursor->value();
     }
@@ -45,9 +49,10 @@ public:
     }
 
 private:
-    ModKey::Ptr m_menu_key{ ModKey::create(generate_name("MenuKey_V2"), VK_INSERT) };
-    ModToggle::Ptr m_menu_open{ ModToggle::create(generate_name("MenuOpen"), true) };
-    ModToggle::Ptr m_remember_menu_state{ ModToggle::create(generate_name("RememberMenuState"), false) };
+    ModKey::Ptr m_menu_key{ModKey::create(generate_name("MenuKey_V2"), VK_INSERT)};
+    ModToggle::Ptr m_menu_open{ModToggle::create(generate_name("MenuOpen"), true)};
+    ModToggle::Ptr m_disable_online_scripts{ModToggle::create(generate_name("DisableOnlineScripts"), false)};
+    ModToggle::Ptr m_remember_menu_state{ModToggle::create(generate_name("RememberMenuState"), false)};
 #if defined(RE8) && !defined(REFRAMEWORK_UNIVERSAL)
     ModToggle::Ptr m_always_show_cursor{ ModToggle::create(generate_name("DrawCursorWithMenuOpen"), true) };
 #else
@@ -64,6 +69,7 @@ private:
     ValueList m_options {
         *m_menu_key,
         *m_menu_open,
+        *m_disable_online_scripts,
         *m_remember_menu_state,
         *m_always_show_cursor,
         *m_show_cursor_key,
