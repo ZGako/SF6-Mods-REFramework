@@ -27,6 +27,12 @@ LONG WINAPI reframework::global_exception_handler(struct _EXCEPTION_POINTERS* ei
     spdlog::error("Exception occurred: {:x}", ei->ExceptionRecord->ExceptionCode);
     
     spdlog::error("RIP (exception record): {:x}", (uintptr_t)ei->ExceptionRecord->ExceptionAddress);
+    spdlog::error("Exception flags: {:x}", ei->ExceptionRecord->ExceptionFlags);
+    spdlog::error("Exception parameters: {}", ei->ExceptionRecord->NumberParameters);
+    if (ei->ExceptionRecord->NumberParameters >= 2) {
+        spdlog::error("Access type: {}", ei->ExceptionRecord->ExceptionInformation[0]);
+        spdlog::error("Access address: {:x}", ei->ExceptionRecord->ExceptionInformation[1]);
+    }
     spdlog::error("RIP: {:x}", ei->ContextRecord->Rip);
     spdlog::error("RSP: {:x}", ei->ContextRecord->Rsp);
     spdlog::error("RCX: {:x}", ei->ContextRecord->Rcx);
@@ -121,10 +127,22 @@ LONG WINAPI reframework::global_exception_handler(struct _EXCEPTION_POINTERS* ei
 
         auto minidump_write_dump = (decltype(MiniDumpWriteDump)*)GetProcAddress(dbghelp, "MiniDumpWriteDump");
 
+        const auto dump_type = static_cast<MINIDUMP_TYPE>(
+            MiniDumpWithDataSegs |
+            MiniDumpWithHandleData |
+            MiniDumpWithUnloadedModules |
+            MiniDumpWithThreadInfo |
+            MiniDumpWithIndirectlyReferencedMemory |
+            MiniDumpScanMemory |
+            MiniDumpWithFullMemoryInfo |
+            MiniDumpWithFullMemory |
+            MiniDumpWithTokenInformation
+        );
+
         minidump_write_dump(GetCurrentProcess(), 
             GetCurrentProcessId(),
             f,
-            MINIDUMP_TYPE::MiniDumpNormal, 
+            dump_type,
             &ei_info, 
             nullptr, 
             nullptr
